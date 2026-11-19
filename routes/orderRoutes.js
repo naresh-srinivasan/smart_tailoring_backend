@@ -1,6 +1,6 @@
 // routes/orders.js
 import express from "express";
-import { authenticate } from "./authRoutes.js";
+import { authenticate, isAdmin } from "./authRoutes.js";
 import { User, Order, Measurement } from "../models/index.js"
 import Notification from "../models/Notifications.js";
 import PromoCode from "../models/PromoCode.js";
@@ -221,7 +221,7 @@ router.post("/:id/cancel", authenticate, async (req, res) => {
   }
 });
 
-router.put("/:id/status", authenticate, async (req, res) => {
+router.put("/:id/status", authenticate, isAdmin, async (req, res) => {
   const { id } = req.params;
   const { status, otp } = req.body; // otp required for Delivered
 

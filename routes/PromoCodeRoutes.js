@@ -1,5 +1,5 @@
 import express from "express";
-import { authenticate } from "./authRoutes.js";
+import { authenticate, isAdmin } from "./authRoutes.js";
 import PromoCode from "../models/PromoCode.js";
 
 const router = express.Router();
@@ -7,7 +7,7 @@ const router = express.Router();
 /**
  * POST /api/promo/create (admin only)
  */
-router.post("/create", authenticate, async (req, res) => {
+router.post("/create", authenticate, isAdmin, async (req, res) => {
   const { code, discountPercentage, validFrom, validTo, usageLimit, description } = req.body;
 
   try {
@@ -31,7 +31,7 @@ router.post("/create", authenticate, async (req, res) => {
 /**
  * GET /api/promo/list
  */
-router.get("/list", authenticate, async (req, res) => {
+router.get("/list", authenticate, isAdmin, async (req, res) => {
   try {
     const promos = await PromoCode.findAll({ order: [["createdAt", "DESC"]] });
     res.json({ promos });
@@ -44,7 +44,7 @@ router.get("/list", authenticate, async (req, res) => {
 /**
  * PUT /api/promo/:id (edit promo)
  */
-router.put("/:id", authenticate, async (req, res) => {
+router.put("/:id", authenticate, isAdmin, async (req, res) => {
   const { id } = req.params;
   const { code, discountPercentage, validTo, usageLimit, description } = req.body;
 
@@ -69,7 +69,7 @@ router.put("/:id", authenticate, async (req, res) => {
 /**
  * DELETE /api/promo/:id (delete promo)
  */
-router.delete("/:id", authenticate, async (req, res) => {
+router.delete("/:id", authenticate, isAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {

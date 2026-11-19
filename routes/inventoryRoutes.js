@@ -1,5 +1,6 @@
 import express from "express";
 import Inventory from "../models/Inventory.js";
+import { authenticate, isAdmin } from "./authRoutes.js";
 
 const router = express.Router();
 
@@ -13,7 +14,7 @@ const validateId = (req, res, next) => {
 };
 
 // CREATE material
-router.post("/", async (req, res) => {
+router.post("/", authenticate, isAdmin, async (req, res) => {
   try {
     const { material_name, material_type, color, color_code, pattern, total_quantity, price } = req.body;
     const item = await Inventory.create({ material_name, material_type, color, color_code, pattern, total_quantity, price });
@@ -36,7 +37,7 @@ router.get("/", async (req, res) => {
 });
 
 // UPDATE material (full update)
-router.put("/:id", validateId, async (req, res) => {
+router.put("/:id", authenticate, isAdmin, validateId, async (req, res) => {
   const { id } = req.params;
   try {
     const item = await Inventory.findByPk(id);
@@ -60,7 +61,7 @@ router.put("/:id", validateId, async (req, res) => {
 });
 
 // PATCH only total_quantity
-router.patch("/:id", validateId, async (req, res) => {
+router.patch("/:id", authenticate, isAdmin, validateId, async (req, res) => {
   const { id } = req.params;
   const { total_quantity } = req.body;
   try {
@@ -78,7 +79,7 @@ router.patch("/:id", validateId, async (req, res) => {
 });
 
 // DELETE material
-router.delete("/:id", validateId, async (req, res) => {
+router.delete("/:id", authenticate, isAdmin, validateId, async (req, res) => {
   const { id } = req.params;
   try {
     const item = await Inventory.findByPk(id);

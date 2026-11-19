@@ -67,7 +67,8 @@ export const isAdmin = (req, res, next) => {
 ------------------------- */
 router.post("/register", async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password } = req.body;
+    const role = "Customer"; // admin accounts cannot be self-registered
 
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser)
@@ -196,7 +197,7 @@ router.get("/profile", authenticate, async (req, res) => {
 
 // The above code is a new one
 
-router.get("/customers", async (req, res) => {
+router.get("/customers", authenticate, isAdmin, async (req, res) => {
   try {
     const customers = await User.findAll({
       where: { role: "Customer" },

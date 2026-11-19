@@ -133,8 +133,3 @@ sequelize.query("CREATE SCHEMA IF NOT EXISTS smart_schema")
   .catch((err) => {
     console.error("Failed to sync tables:", err);
   });
-
-  console.log({
-  dbUser: process.env.DB_USER,
-  dbPassword: process.env.DB_PASS,
-});

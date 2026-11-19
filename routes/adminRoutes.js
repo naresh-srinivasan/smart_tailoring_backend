@@ -1,7 +1,7 @@
 // routes/admin.js
 import express from "express";
 import User from "../models/User.js";
-import { authenticate } from "./authRoutes.js";
+import { authenticate, isAdmin } from "./authRoutes.js";
 import Order from "../models/Order.js";
 import { fn, col, literal, Op} from "sequelize";
 import bcrypt from "bcryptjs";
@@ -10,7 +10,7 @@ import bcrypt from "bcryptjs";
 const router = express.Router();
 
 // GET total customers
-router.get("/customers/count", authenticate, async (req, res) => {
+router.get("/customers/count", authenticate, isAdmin, async (req, res) => {
   try {
     const count = await User.count();
     res.json({ count });
@@ -21,7 +21,7 @@ router.get("/customers/count", authenticate, async (req, res) => {
 });
 
 // GET total orders
-router.get("/orders/count", authenticate, async (req, res) => {
+router.get("/orders/count", authenticate, isAdmin, async (req, res) => {
   try {
     const count = await Order.count();
     res.json({ count });
@@ -31,7 +31,7 @@ router.get("/orders/count", authenticate, async (req, res) => {
   }
 });
 
-router.get("/orders/stats", authenticate, async (req, res) => {
+router.get("/orders/stats", authenticate, isAdmin, async (req, res) => {
   try {
     const totalOrders = await Order.count();
     const pendingOrders = await Order.count({ where: { status: "Pending" } });
@@ -46,7 +46,7 @@ router.get("/orders/stats", authenticate, async (req, res) => {
 
 
 
-router.get("/orders/daily-stats", authenticate, async (req, res) => {
+router.get("/orders/daily-stats", authenticate, isAdmin, async (req, res) => {
   try {
     const results = await Order.findAll({
       attributes: [
@@ -73,7 +73,7 @@ router.get("/orders/daily-stats", authenticate, async (req, res) => {
   }
 });
 
-router.get("/orders/completed-daily-stats", authenticate, async (req, res) => {
+router.get("/orders/completed-daily-stats", authenticate, isAdmin, async (req, res) => {
   try {
     const results = await Order.findAll({
       attributes: [
@@ -100,7 +100,7 @@ router.get("/orders/completed-daily-stats", authenticate, async (req, res) => {
 
 
 
-router.get("/", async (req, res) => {
+router.get("/", authenticate, isAdmin, async (req, res) => {
   try {
     const users = await User.findAll();
     res.json(users.map(user => user.toSafeObject()));
@@ -113,7 +113,7 @@ router.get("/", async (req, res) => {
 /**
  * ✅ Get user by ID
  */
-router.get("/:id", async (req, res) => {
+router.get("/:id", authenticate, isAdmin, async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -126,7 +126,7 @@ router.get("/:id", async (req, res) => {
 /**
  * ✅ Create new user
  */
-router.post("/", async (req, res) => {
+router.post("/", authenticate, isAdmin, async (req, res) => {
   try {
     const { name, email, phone, password, address, profileImage, role } = req.body;
 
@@ -153,7 +153,7 @@ router.post("/", async (req, res) => {
 /**
  * ✅ Update user
  */
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, isAdmin, async (req, res) => {
   try {
     const { name, email, phone, password, address, profileImage, role, isActive } = req.body;
 
@@ -185,7 +185,7 @@ router.put("/:id", async (req, res) => {
 /**
  * ✅ Delete user
  */
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticate, isAdmin, async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: "User not found" });
@@ -197,7 +197,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 // GET daily revenue excluding cancelled orders
-router.get("/orders/daily-revenue", authenticate, async (req, res) => {
+router.get("/orders/daily-revenue", authenticate, isAdmin, async (req, res) => {
   try {
     const results = await Order.findAll({
       attributes: [
