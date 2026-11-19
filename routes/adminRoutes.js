@@ -12,7 +12,7 @@ const router = express.Router();
 // GET total customers
 router.get("/customers/count", authenticate, isAdmin, async (req, res) => {
   try {
-    const count = await User.count();
+    const count = await User.count({ where: { role: "Customer" } });
     res.json({ count });
   } catch (err) {
     console.error("Error fetching total customers:", err);
