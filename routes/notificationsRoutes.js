@@ -10,7 +10,7 @@ router.post("/", authenticate, async (req, res) => {
   const { title, message, orderId, userId } = req.body;
 
   try {
-    if (req.userRole !== "Admin") {
+    if (req.user?.role !== "Admin") {
       return res.status(403).json({ message: "Forbidden: Admin only" });
     }
 
@@ -25,7 +25,7 @@ router.post("/", authenticate, async (req, res) => {
 
     // Emit real-time notification via Socket.IO
     const io = req.app.get("io");
-    io.emit(`notification-${userId}`, {
+    io?.emit(`notification-${userId}`, {
       id: notification.id,
       title: notification.title,
       message: notification.message,
