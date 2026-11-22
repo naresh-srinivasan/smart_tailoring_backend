@@ -43,6 +43,12 @@ const Inventory = sequelize.define(
       type: DataTypes.FLOAT, 
       defaultValue: 0 
     },
+
+    // Photo of the fabric: a site path (/fabrics/x.jpg), a URL, or a small data URL uploaded from Admin.
+    image_url: {
+      type: DataTypes.TEXT,
+      allowNull: true
+    },
   },
   {
     tableName: "inventory",

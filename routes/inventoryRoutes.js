@@ -16,8 +16,8 @@ const validateId = (req, res, next) => {
 // CREATE material
 router.post("/", authenticate, isAdmin, async (req, res) => {
   try {
-    const { material_name, material_type, color, color_code, pattern, total_quantity, price } = req.body;
-    const item = await Inventory.create({ material_name, material_type, color, color_code, pattern, total_quantity, price });
+    const { material_name, material_type, color, color_code, pattern, total_quantity, price, image_url } = req.body;
+    const item = await Inventory.create({ material_name, material_type, color, color_code, pattern, total_quantity, price, image_url: image_url || null });
     res.status(201).json({ message: "Material added successfully", item });
   } catch (err) {
     console.error("Create Error:", err);
@@ -43,7 +43,8 @@ router.put("/:id", authenticate, isAdmin, validateId, async (req, res) => {
     const item = await Inventory.findByPk(id);
     if (!item) return res.status(404).json({ error: "Material not found" });
 
-    const { material_name, material_type, color, color_code, pattern, total_quantity, price } = req.body;
+    const { material_name, material_type, color, color_code, pattern, total_quantity, price, image_url } = req.body;
+    item.image_url = image_url || null;
     item.material_name = material_name;
     item.material_type = material_type;
     item.color = color;

@@ -10,6 +10,7 @@ import Inventory from "../models/Inventory.js";
 import MaterialUsageLog from "../models/MaterialUsageLog.js";
 import Notification from "../models/Notifications.js";
 import PromoCode from "../models/PromoCode.js";
+import { FABRICS, imagePath } from "./fabricCatalog.js";
 
 const DEMO_PASSWORD = "Demo@1234";
 const day = 24 * 60 * 60 * 1000;
@@ -39,17 +40,14 @@ try {
 
   /* ---------------- Inventory (price is per metre) ---------------- */
   const inv = {};
+  // Keys used by the demo orders below map to catalogue rows.
   const stock = [
-    ["cotton_blue", "Cotton", "fabric", "Blue", "#3B82F6", "Plain", 120, 200],
-    ["cotton_white", "Cotton", "fabric", "White", "#FFFFFF", "Striped", 90, 220],
-    ["linen_beige", "Linen", "fabric", "Beige", "#D8C3A5", "Plain", 60, 350],
-    ["silk_maroon", "Silk", "fabric", "Maroon", "#800000", "Plain", 40, 650],
-    ["poly_black", "Polyester", "fabric", "Black", "#111111", "Checked", 150, 150],
-    ["velvet_green", "Velvet", "fabric", "Green", "#166534", "Plain", 25, 800],
-    ["chiffon_pink", "Chiffon", "fabric", "Pink", "#F9A8D4", "Floral", 18, 450],
+    ["cotton_blue", ...FABRICS[0]], ["cotton_white", ...FABRICS[1]], ["linen_beige", ...FABRICS[5]], ["silk_maroon", ...FABRICS[7]],
+    ["poly_black", ...FABRICS[15]], ["velvet_green", ...FABRICS[10]], ["chiffon_pink", ...FABRICS[13]],
+    ...FABRICS.filter((_, i) => ![0, 1, 5, 7, 15, 10, 13].includes(i)).map((f, i) => ["extra" + i, ...f]),
   ];
-  for (const [key, material_name, material_type, color, color_code, pattern, total_quantity, price] of stock) {
-    inv[key] = await Inventory.create({ material_name, material_type, color, color_code, pattern, total_quantity, price });
+  for (const [key, material_name, material_type, color, color_code, pattern, total_quantity, price, slug] of stock) {
+    inv[key] = await Inventory.create({ material_name, material_type, color, color_code, pattern, total_quantity, price, image_url: imagePath(slug) });
     await MaterialUsageLog.create({
       inventory_id: inv[key].id, quantity_used: total_quantity, action_type: "addition",
       notes: "Initial stock", created_at: ago(30),

@@ -31,7 +31,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: "1mb" }));
 
 // The frontend calls both /api/... and /api/api/...; accept both by collapsing the doubled prefix.
 // /api/send-contact is also used by the contact form but is defined at the root.
